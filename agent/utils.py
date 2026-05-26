@@ -6,6 +6,7 @@ import random
 from referee.game import \
     PlayerColor, Action, SpawnAction, SpreadAction, HexPos, HexDir
 
+
 def apply_ansi(str, bold=True, color=None):
     """
     Wraps a string with ANSI control codes to enable basic terminal-based
@@ -83,6 +84,8 @@ def render_board(board: dict[tuple, tuple], ansi=False) -> str:
     """
     generate a list containing neighboring (firendly) cells
     """
+
+
 def get_neighbors(coord: tuple):
     directions = [(0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1), (1, 0)]
     neighbors = list()
@@ -93,6 +96,8 @@ def get_neighbors(coord: tuple):
     """
     spawn a cell adjacent to neighboring (friendly) cells
     """
+
+
 def spawn(board: dict[tuple, tuple], coord: tuple, player: str, enemy, game_state):
     if coord in board:
         all_neighbors = list()
@@ -121,6 +126,8 @@ def spawn(board: dict[tuple, tuple], coord: tuple, player: str, enemy, game_stat
     """
     decide which move egenerate the best eval value and playu it
     """
+
+
 def make_move(board: dict[tuple, tuple], player: str, enemy, game_state):
     total_power = count_power(board)
 
@@ -145,19 +152,23 @@ def make_move(board: dict[tuple, tuple], player: str, enemy, game_state):
 
     if best_move[0] == "SPAWN":
         return spawn(board, best_move[1], player, enemy, game_state)
-            
+
     elif best_move[0] == "SPREAD":
         return simple_spread(board, (best_move[1][0], best_move[1][1]), HexDir((best_move[1][2], best_move[1][3])))
 
     """
     simple helper function for spreading into the board
     """
+
+
 def simple_spread(board: dict[tuple, tuple], playerCell, direction):
     return SpreadAction(HexPos(playerCell[0], playerCell[1]), HexDir(direction))
 
     """
     generate a list of (firendly) cells
     """
+
+
 def coord_list(board, player):
     result_list = list()
 
@@ -169,6 +180,8 @@ def coord_list(board, player):
     """
     generate a list of (firendly) cells
     """
+
+
 def determine_next_cell(current_cell: tuple, direction: tuple):
     # hex directions: (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1), (1, 0)
 
@@ -183,7 +196,7 @@ def determine_next_cell(current_cell: tuple, direction: tuple):
         next_x -= 7
     elif next_x < 0:
         next_x += 7
-    if  next_y > 6:
+    if next_y > 6:
         next_y -= 7
     elif next_y < 0:
         next_y += 7
@@ -193,6 +206,8 @@ def determine_next_cell(current_cell: tuple, direction: tuple):
     """
     make a spread move
     """
+
+
 def spread(board: dict[tuple, tuple], action: tuple, colour):
     cell = (action[0], action[1])
     direction = (action[2], action[3])
@@ -221,6 +236,8 @@ def spread(board: dict[tuple, tuple], action: tuple, colour):
     """
     count total power on the board
     """
+
+
 def count_power(board: dict[tuple, tuple]):
     total_power = 0
     values = list(board.values())
@@ -231,6 +248,8 @@ def count_power(board: dict[tuple, tuple]):
     """
     count total power on the board (cell)
     """
+
+
 def count_color_power(board: dict[tuple, tuple], color):
     total_power = 0
     values = list(board.values())
@@ -242,11 +261,13 @@ def count_color_power(board: dict[tuple, tuple], color):
     """
     minimax implementation with alpha-beta pruning
     """
+
+
 def mini_max(board: dict[tuple, tuple], depth, max_player, player, enemy, game_state, alpha, beta):
     # base case (game over)
-    if (depth ==  0) or (game_over(player, enemy, game_state)):
+    if (depth == 0) or (game_over(player, enemy, game_state)):
         return evaluate_state(board, player, enemy)
-   
+
     # current player is to be maximised
     if max_player == True:
         max_eval = float('-inf')
@@ -282,6 +303,8 @@ def mini_max(board: dict[tuple, tuple], depth, max_player, player, enemy, game_s
     """
     generate a tempory board
     """
+
+
 def make_board(board, move, player):
     temp_board = board.copy()
     if move[0] == "SPAWN":
@@ -293,6 +316,8 @@ def make_board(board, move, player):
     """
     determin of the end game state has been reached
     """
+
+
 def game_over(player, enemy, game_state):
     if (game_state._round >= 343) or \
             (count_color_power(game_state.board, player) == 0) or \
@@ -304,6 +329,8 @@ def game_over(player, enemy, game_state):
     """
     generate a value to the given state
     """
+
+
 def evaluate_state(board: dict[tuple, tuple], player: str, enemy: str) -> int:
     # The below Evaluation function is completely made up!!!!!!
 
@@ -327,7 +354,7 @@ def evaluate_state(board: dict[tuple, tuple], player: str, enemy: str) -> int:
 
     player_dom = (player_cells / (player_cells + enemy_cells + empty_cells))
     enemy_dom = (enemy_cells / (player_cells + enemy_cells + empty_cells))
-    dominance_eval = (cell_dominance_weight * (player_dom + enemy_dom))*10
+    dominance_eval = (cell_dominance_weight * (player_dom + enemy_dom)) * 10
 
     # Mobility Eval
     mobility_eval = (Mobility_weight * (calculate_spread_enemy_cells(board, player, enemy)))
@@ -373,17 +400,18 @@ def calculate_spread_enemy_cells(board: dict[tuple, tuple], player: str, enemy: 
                     current_cell = adjacent_cell
     return enemy_count
 
-
     """
     generate a list of possible moves to make on the board
     """
+
+
 def generate_moves(board: dict[tuple, tuple], player: str) -> list:
     moves = list()
     # generate moves for spawning a new piece
     # get a list of empty cells which can be spawned on
     empty_cells = get_spawn_options(board)
     for cell in empty_cells:
-        moves.append(("SPAWN",(cell[0], cell[1])))
+        moves.append(("SPAWN", (cell[0], cell[1])))
 
     # generate moves for spreading existing pieces
     player_cells = coord_list(board, player)
@@ -396,6 +424,8 @@ def generate_moves(board: dict[tuple, tuple], player: str) -> list:
     """
     generate a list of possible places to spawn on
     """
+
+
 def get_spawn_options(board: dict[tuple, tuple]) -> list:
     # get a list of all empty cells which can be spawned on
     empty_cells = list()
